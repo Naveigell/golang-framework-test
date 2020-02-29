@@ -1,36 +1,19 @@
 package main
 
 import (
-    ht "system/http"
-    "net/http"
-    // "fmt"
+    http "system/http"
     "system/loader"
-    // "html/template"
-    // "net/url"
+    "application/controllers"
 )
 
-var routes = new(ht.Router)
+var routes = new(http.Router)
 var load = new(loader.Loader)
 
-func test (response http.ResponseWriter, request *http.Request)  {
-    // var query = request.URL.Query()
-    // fmt.Println("/login --> GET", query)
-
-    var error = load.View("welcome.html", response, nil)
-    if error {
-
-    }
-
-    // var tmplt = template.Must(template.New("welcome.html").ParseFiles("application/views/welcome.html"))
-    // var tmpltError = tmplt.Execute(response, nil)
-    // if tmpltError != nil {
-    //     http.Error(response, "Template not reloading", http.StatusInternalServerError)
-    // }
-}
+var welcome = new(controllers.WelcomeController)
 
 func HandleRoutes()  {
-    routes.Get("/login", test);
-    routes.Post("/login", func (response http.ResponseWriter, request *http.Request)  {
-        // fmt.Println("/login --> POST")
-    })
+    routes.Get("/", welcome.Index)
+    routes.Post("/", welcome.Post)
+
+    routes.Save()
 }

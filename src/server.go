@@ -3,6 +3,7 @@ package main
 import (
     "net/http"
     "log"
+    "system/config"
 )
 
 func RunApp()  {
@@ -10,6 +11,6 @@ func RunApp()  {
     Init()
     HandleRoutes()
 
-    log.Println("Listen on port : ", server.PORT)
-    log.Fatal(http.ListenAndServe(server.HOST + ":" + server.PORT, nil))
+    log.Println("Listen on port : ", config.Server.PORT)
+    log.Fatal(http.ListenAndServe(config.Server.HOST + ":" + config.Server.PORT, nil))
 }

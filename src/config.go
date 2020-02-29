@@ -4,9 +4,11 @@ import (
     "system/config"
 )
 
-var server = new(config.Server)
-
 func Init()  {
-    server.HOST = "127.0.0.1"
-    server.PORT = "4000"
+    config.Server.HOST = "127.0.0.1"
+    config.Server.PORT = "4000"
+
+    config.Server.AcceptRequestDomain = []string {
+        "127.0.0.1",
+    }
 }

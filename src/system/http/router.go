@@ -4,8 +4,8 @@ import (
     "net/http"
     "fmt"
     // "net/url"
-    "log"
     "html/template"
+    "log"
 )
 
 type function func(response http.ResponseWriter, request *http.Request)
@@ -16,26 +16,25 @@ type Method struct {
     Url string
     Method[] string
     Function[] function
+    IsMainRouteActive bool
 }
 
 var methods[] Method
 
 func (param Router) Get(url string, fn function)  {
-    // pass url, method dan function untuk kemudian di masukkan ke daftar route
     pass(url, http.MethodGet, fn)
 }
 
 func (param Router) Post(url string, fn function)  {
-    // pass url, method dan function untuk kemudian di masukkan ke daftar route
     pass(url, http.MethodPost, fn)
 }
 
 func pass(url string, m string, fn function)  {
-    // buat variable sementara untuk menampung nilai - nilai yang ada di struct Method
     var method = Method {
         Url: url,
         Method: []string{m},
         Function: []function{fn},
+        IsMainRouteActive: url == "/",
     }
 
     // cek semua daftar route
@@ -45,8 +44,8 @@ func pass(url string, m string, fn function)  {
         if method.Url == temp.Url {
             // cek apakah ada route dengan method yang sama
             for index := 0; index < len(method.Method); index++ {
-                if temp.Method[i] == m {
-                    log.Fatal("There is route with the same METHOD")
+                if temp.Method[index] == m {
+                    log.Fatal("There is route with the same METHOD in url --> ", method.Url)
                     return
                 }
             }
@@ -59,9 +58,7 @@ func pass(url string, m string, fn function)  {
         }
     }
 
-    // jika url tidak terdaftar, maka daftarkan
     methods = append(methods, method)
-    http.HandleFunc(method.Url, Serve)
 }
 
 func Serve(response http.ResponseWriter, request *http.Request){
@@ -75,6 +72,35 @@ func Serve(response http.ResponseWriter, request *http.Request){
     }
 }
 
+func (param Router) Save() {
+    var findActiveHome = false
+    // looping masing - masing methods
+    for i := 0; i < len(methods); i++ {
+        var method = methods[i]
+
+        // cek apakah ada main route
+        if !findActiveHome {
+            findActiveHome = method.Url == "/"
+        }
+
+        http.HandleFunc(method.Url, Serve)
+    }
+
+    if !findActiveHome {
+        // jika tidak ada main route maka
+        // buat main route dengan menonaktifkan
+        // IsMainRouteActive
+        var method = Method {
+            Url: "/",
+            Method: []string{http.MethodGet},
+            IsMainRouteActive: false,
+        }
+        methods = append(methods, method)
+
+        http.HandleFunc("/", Serve)
+    }
+}
+
 func findRoute(response http.ResponseWriter, request *http.Request, m string)  {
     // ambil url path saat ini
     var urlPath = request.URL.Path
@@ -84,6 +110,10 @@ func findRoute(response http.ResponseWriter, request *http.Request, m string)  {
     // dengan url
     for index := 0; index < len(methods); index++ {
         var method = methods[index]
+        // cek apakah main routenya active dan urlnya = "/"
+        if !method.IsMainRouteActive && method.Url == "/" {
+            break
+        }
 
         if method.Url == urlPath {
             // looping masing - masing method yang dimiloki
@@ -101,12 +131,10 @@ func findRoute(response http.ResponseWriter, request *http.Request, m string)  {
     }
 
     if !isFound {
-        // jika daftar route tidak ditemukan maka tampilkan 404 file note found
         var tmplt = template.Must(template.New("404.html").ParseFiles("application/views/error/404.html"))
         var error = tmplt.Execute(response, nil)
         if error != nil {
-            fmt.Println("Error when serving file")
+            fmt.Println("Error when serving 404 file")
         }
-        fmt.Println("Route not found!")
     }
 }
