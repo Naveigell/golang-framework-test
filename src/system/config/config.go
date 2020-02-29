@@ -4,7 +4,7 @@ type ServerConfig struct {
     PORT string
     HOST string
 
-    AcceptRequestDomain[] string
+    AcceptableRequestDomain[] string
 }
 
 var Server ServerConfig

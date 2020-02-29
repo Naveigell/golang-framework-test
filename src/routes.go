@@ -13,7 +13,6 @@ var welcome = new(controllers.WelcomeController)
 
 func HandleRoutes()  {
     routes.Get("/", welcome.Index)
-    routes.Post("/", welcome.Post)
 
     routes.Save()
 }
