@@ -3,7 +3,8 @@ package http
 import (
     "net/http"
     "fmt"
-    // "net/url"
+    "system/helper"
+    "system/config"
     "html/template"
     "log"
 )
@@ -62,6 +63,14 @@ func pass(url string, m string, fn function)  {
 }
 
 func Serve(response http.ResponseWriter, request *http.Request){
+    permission := new(helper.Permission)
+    if config.Cors.GlobalCorsEnable { // jika enable cors global diaktifkan
+                                       // maka tidak perlu enable
+                                       // cors dimasing - masing
+                                       // route
+        permission.EnableCors(response, request)
+    }
+
     switch request.Method {
         case http.MethodGet:
             findRoute(response, request, http.MethodGet)

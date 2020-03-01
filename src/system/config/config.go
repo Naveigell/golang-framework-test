@@ -4,7 +4,14 @@ type ServerConfig struct {
     PORT string
     HOST string
 
-    AcceptableRequestDomain[] string
+    AcceptableHostRequest[] string
 }
 
-var Server ServerConfig
+type CorsConfig struct {
+    GlobalCorsEnable bool
+}
+
+var (
+    Cors CorsConfig
+    Server ServerConfig
+)
