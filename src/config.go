@@ -20,5 +20,5 @@ func Init()  {
     // CORS
     //
 
-    config.Cors.GlobalCorsEnable = false
+    config.Cors.GlobalCorsEnable = true
 }

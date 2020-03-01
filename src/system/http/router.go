@@ -15,8 +15,8 @@ type Router struct {}
 
 type Method struct {
     Url string
-    Method[] string
-    Function[] function
+    Methods[] string
+    Functions[] function
     IsMainRouteActive bool
 }
 
@@ -33,8 +33,8 @@ func (param Router) Post(url string, fn function)  {
 func pass(url string, m string, fn function)  {
     var method = Method {
         Url: url,
-        Method: []string{m},
-        Function: []function{fn},
+        Methods: []string{m},
+        Functions: []function{fn},
         IsMainRouteActive: url == "/",
     }
 
@@ -44,17 +44,19 @@ func pass(url string, m string, fn function)  {
         // cek apakah urlnya sama
         if method.Url == temp.Url {
             // cek apakah ada route dengan method yang sama
-            for index := 0; index < len(method.Method); index++ {
-                if temp.Method[index] == m {
-                    log.Fatal("There is route with the same METHOD in url --> ", method.Url)
+            for index := 0; index < len(temp.Methods); index++ {
+                if temp.Methods[index] == m {
+                    log.Fatal("There is route with the same METHOD in url --> ", method.Url, " : with method --> ", m)
                     return
                 }
             }
+
             // jika sama, maka kita tidak perlu menambah ke
             // daftar route baru, cukup menambah ke dalam
             // array yang ada pada struct Method
-            methods[i].Method = append(methods[i].Method, m)
-            methods[i].Function = append(methods[i].Function, fn)
+            methods[i].Methods = append(methods[i].Methods, m)
+            methods[i].Functions = append(methods[i].Functions, fn)
+            // fmt.Println(methods[i].Methods)
             return
         }
     }
@@ -101,7 +103,7 @@ func (param Router) Save() {
         // IsMainRouteActive
         var method = Method {
             Url: "/",
-            Method: []string{http.MethodGet},
+            Methods: []string{http.MethodGet},
             IsMainRouteActive: false,
         }
         methods = append(methods, method)
@@ -127,10 +129,10 @@ func findRoute(response http.ResponseWriter, request *http.Request, m string)  {
         if method.Url == urlPath {
             // looping masing - masing method yang dimiloki
             // oleh var method
-            for i := 0; i < len(method.Method); i++ {
-                if method.Method[i] == m {
+            for i := 0; i < len(method.Methods); i++ {
+                if method.Methods[i] == m {
                     // jika sama maka panggil fungsinya
-                    method.Function[i](response, request)
+                    method.Functions[i](response, request)
                     // jadikan found = true lalu break
                     isFound = true
                     break
